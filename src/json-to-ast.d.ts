@@ -5,8 +5,6 @@ declare namespace JsonToAst {
         offset: number;
     }
 
-
-
     export interface AstLocation {
         start: AstPosition;
         end: AstPosition;
@@ -42,6 +40,7 @@ declare namespace JsonToAst {
         type: 'Identifier';
         value: string;
         raw: string;
+        loc: AstLocation
     }
 
     export type AstJsonEntity = AstObject | AstArray | AstLiteral;
@@ -49,6 +48,6 @@ declare namespace JsonToAst {
 
 declare function JsonToAst(json: string): JsonToAst.AstJsonEntity;
 
-declare module "json-to-ast" {
+declare module 'json-to-ast' {
     export = JsonToAst;
 }

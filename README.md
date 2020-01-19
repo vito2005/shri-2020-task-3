@@ -1,3 +1,14 @@
+## Ход действий для запуска программы
+
+1. Подключил eslint standart
+2. В соответвий с официальной документацией(https://code.visualstudio.com/api/language-extensions/language-server-extension-guide) внес правки в server.js
+3. За счет подключения режима отладки нашел ошибки в linter.js и server.js
+4. Включил линтер в package.json по умолчанию
+5. Исправил ошибки в extention.js: getMediaPath и updateContent
+6. Добавил build версии стилей и скрипта в папку preview
+7. 
+
+
 # Задание 3. Найдите ошибки
 
 В этом репозитории находятся материалы тестового задания «Найдите ошибки» для [16-й Школы разработки интерфейсов](https://yandex.ru/promo/academy/shri) (зима 2020, Москва).

@@ -21,7 +21,7 @@
 			"properties": {
 				"example.enable": {
 					"type": "boolean",
-					"default": false,
+					"default": true,
 					"description": "Enable/disable example linter."
 				},
 				"example.severity.uppercaseNamesIsForbidden": {
@@ -89,6 +89,14 @@
 	"devDependencies": {
 		"@types/mocha": "^2.2.42",
 		"@types/node": "^10.12.21",
+		"@typescript-eslint/eslint-plugin": "^2.16.0",
+		"@typescript-eslint/parser": "^2.16.0",
+		"eslint": "^6.8.0",
+		"eslint-config-standard": "^14.1.0",
+		"eslint-plugin-import": "^2.20.0",
+		"eslint-plugin-node": "^11.0.0",
+		"eslint-plugin-promise": "^4.2.1",
+		"eslint-plugin-standard": "^4.0.1",
 		"tslint": "^5.12.1",
 		"typescript": "^3.4.5"
 	},

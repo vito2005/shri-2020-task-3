@@ -4,11 +4,11 @@ export enum RuleKeys {
 }
 
 export enum Severity {
-    Error = "Error", 
-    Warning = "Warning", 
-    Information = "Information", 
-    Hint = "Hint", 
-    None = "None"
+    Error = 'Error',
+    Warning = 'Warning',
+    Information = 'Information',
+    Hint = 'Hint',
+    None = 'None'
 }
 
 export interface SeverityConfiguration {
@@ -17,8 +17,8 @@ export interface SeverityConfiguration {
 }
 
 export interface ExampleConfiguration {
- 
+
     enable: boolean;
- 
+
     severity: SeverityConfiguration;
 }
