@@ -134,7 +134,7 @@ export const gridTooMuchMarketingBlocksRule = ({ log, property, errors, ast, Rul
       tooMuchMarketingBlocks = (mColValue + log.data.blocks) / gridColumnsValue > 0.5
     } else if (hasMarketingBlock && gridColumnsValue) {
       tooMuchMarketingBlocks = mColValue / gridColumnsValue > 0.5
-    } else if (log.data.blocks) {
+    } else if (hasMarketingBlock) {
       tooMuchMarketingBlocks = gridColumnsValue && log.data.blocks / gridColumnsValue > 0.5
     }
 
@@ -144,7 +144,6 @@ export const gridTooMuchMarketingBlocksRule = ({ log, property, errors, ast, Rul
           key: RuleKeys.GridTooMuchMarketingBlocks,
           loc: ast.loc
         })
-      log.data.blocks = 0
     }
 
     if (hasMarketingBlock) {
