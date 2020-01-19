@@ -9,26 +9,36 @@ export interface LinterProblem<TKey> {
 
 export function makeLint<TProblemKey> (
   json: string,
-  validateProperty: (property: jsonToAst.AstProperty) => LinterProblem<TProblemKey>[],
+  validateProperty: (property: jsonToAst.AstProperty,
+     isWarningBlock: boolean,
+      log: any,
+       mods: any, ast: jsonToAst.AstJsonEntity) => LinterProblem<TProblemKey>[],
   validateObject: (property: jsonToAst.AstObject) => LinterProblem<TProblemKey>[]
 ): LinterProblem<TProblemKey>[] {
+
   function walk (
     node: jsonToAst.AstJsonEntity,
-    cbProp: (property: jsonToAst.AstProperty) => void,
-    cbObj: (property: jsonToAst.AstObject) => void
+    cbProp: (property: jsonToAst.AstProperty, isWarningBlock: boolean, mods: any, ast: jsonToAst.AstJsonEntity) => void,
+    cbObj: (property: jsonToAst.AstObject) => void,
+    warningBlock: boolean = false
   ) {
+    let mods: any
     switch (node.type) {
       case 'Array':
         node.children.forEach((item: jsonToAst.AstJsonEntity) => {
-          walk(item, cbProp, cbObj)
+          walk(item, cbProp, cbObj, warningBlock)
         })
         break
       case 'Object':
         cbObj(node)
-
+        mods = node.children && node.children.find(node => node.key.value === 'mods')
         node.children.forEach((property: jsonToAst.AstProperty) => {
-          cbProp(property)
-          walk(property.value, cbProp, cbObj)
+          if (property.value.value === 'warning') {
+            warningBlock = true
+          }
+
+          cbProp(property, warningBlock, mods, node)
+          walk(property.value, cbProp, cbObj, warningBlock)
         })
         break
     }
@@ -38,10 +48,12 @@ export function makeLint<TProblemKey> (
 
   const errors: LinterProblem<TProblemKey>[] = []
   const ast: JsonAST = parseJson(json)
-
+  const log = {
+    data: {}
+  }
   if (ast) {
     walk(ast,
-      (property: jsonToAst.AstProperty) => validateProperty(property).forEach(err => errors.push(err)),
+      (property: jsonToAst.AstProperty, isWarningBlock: boolean, mods: any, ast: jsonToAst.AstJsonEntity) => validateProperty(property, isWarningBlock, log, mods, ast).forEach((err: any) => errors.push(err)),
       (obj: jsonToAst.AstObject) => validateObject(obj).forEach(err => errors.push(err))
     )
   }

@@ -9,13 +9,14 @@ import {
   DidChangeConfigurationParams,
   DidChangeConfigurationNotification
 } from 'vscode-languageserver'
-
+import { getMod } from './helpers'
 import { basename } from 'path'
 
 import * as jsonToAst from 'json-to-ast'
 
 import { ExampleConfiguration, Severity, RuleKeys } from './configuration'
 import { makeLint, LinterProblem } from './linter'
+import { warningButtonSizeRule, warningTextSizesRule, warningButtonPositionRule, warningPlaceholderSizeRule } from './additionalRules'
 
 const conn = createConnection(ProposedFeatures.all)
 const docs: TextDocuments = new TextDocuments()
@@ -77,7 +78,7 @@ function GetSeverity (key: RuleKeys): DiagnosticSeverity | undefined {
 
   switch (severity) {
     case Severity.Error:
-      return DiagnosticSeverity.Information
+      return DiagnosticSeverity.Error
     case Severity.Warning:
       return DiagnosticSeverity.Warning
     case Severity.Information:
@@ -98,6 +99,19 @@ function GetMessage (key: RuleKeys): string {
     return 'Uppercase properties are forbidden!'
   }
 
+  if (key === RuleKeys.WarningTextSizes) {
+    return 'Тексты в блоке warning должны быть одного размера'
+  }
+  if (key === RuleKeys.WarningButtonSize) {
+    return 'Размер кнопки блока warning должен быть на 1 шаг больше эталонного'
+  }
+  if (key === RuleKeys.WarningButtonPosition) {
+    return 'Блок button в блоке warning не может находиться перед блоком placeholder на том же или более глубоком уровне вложенности'
+  }
+  if (key === RuleKeys.WarningPlaceholderSize) {
+    return 'Допустимые размеры для блока placeholder в блоке warning: s, m, l'
+  }
+
   return `Unknown problem type '${key}'`
 }
 
@@ -106,24 +120,36 @@ async function validateTextDocument (textDocument: TextDocument): Promise<void> 
   const json = textDocument.getText()
   const validateObject = (
     obj: jsonToAst.AstObject
-  ): LinterProblem<RuleKeys>[] =>
-    obj.children.some(p => p.key.value === 'block')
+  ): LinterProblem<RuleKeys>[] => {
+    return obj.children.some(p => p.key.value === 'block')
       ? []
       : [{ key: RuleKeys.BlockNameIsRequired, loc: obj.loc }]
+  }
 
   const validateProperty = (
-    property: jsonToAst.AstProperty
+    property: jsonToAst.AstProperty,
+    isWarningBlock: boolean,
+    log: any,
+    mods: any,
+    ast: jsonToAst.AstJsonEntity
   ): LinterProblem<RuleKeys>[] => {
+    const errors: LinterProblem<RuleKeys>[] = []
+    if (isWarningBlock) {
+      const size = getMod(mods, 'size')
+      warningTextSizesRule({ log, property, size, errors, ast, RuleKeys })
+      warningButtonSizeRule({ log, property, size, errors, ast, RuleKeys })
+      warningButtonPositionRule({ log, property, errors, ast, RuleKeys })
+      warningPlaceholderSizeRule({ log, property, size, errors, ast, RuleKeys })
+    }
+
     if (/^[A-Z]+$/.test(property.key.value)) {
-      return [
+      errors.push(
         {
           key: RuleKeys.UppercaseNamesIsForbidden,
           loc: property.key.loc
-        }
-      ]
+        })
     }
-
-    return []
+    return errors
   }
 
   const diagnostics: Diagnostic[] = makeLint(
@@ -154,7 +180,6 @@ async function validateTextDocument (textDocument: TextDocument): Promise<void> 
 
         list.push(diagnostic)
       }
-
       return list
     },
     []

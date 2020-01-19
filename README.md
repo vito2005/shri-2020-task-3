@@ -1,4 +1,4 @@
-## Ход действий для запуска программы
+## Ход действий по исправлению ошибок и добавлению функциональности
 
 1. Подключил eslint standart
 2. В соответвий с официальной документацией(https://code.visualstudio.com/api/language-extensions/language-server-extension-guide) внес правки в server.js
@@ -6,7 +6,7 @@
 4. Включил линтер в package.json по умолчанию
 5. Исправил ошибки в extention.js: getMediaPath и updateContent
 6. Добавил build версии стилей и скрипта в папку preview
-7. 
+7. Добавил Линтер из второго задания в отдельную ветку(feature/newlinter) 
 
 
 # Задание 3. Найдите ошибки

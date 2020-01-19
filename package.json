@@ -47,6 +47,54 @@
 					],
 					"default": "Warning",
 					"description": "The 'blockNameIsRequired' rule severity."
+				},
+				"example.severity.WARNING_TEXT_SIZES_SHOULD_BE_EQUAL": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'warningTextSizes' rule severity."
+				},
+				"example.severity.WARNING_INVALID_BUTTON_SIZE": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'warningButtonSize' rule severity."
+				},
+				"example.severity.WARNING_INVALID_BUTTON_POSITION": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'warningButtonPosition' rule severity."
+				},
+				"example.severity.WARNING_INVALID_PLACEHOLDER_SIZE": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'warningPlaceholderSize' rule severity."
 				}
 			}
 		},

@@ -32,7 +32,7 @@ declare namespace JsonToAst {
     export interface AstProperty {
         type: 'Property';
         key: AstIdentifier;
-        value: AstJsonEntity;
+        value: AstValue;
         loc: AstLocation;
     }
 
@@ -43,7 +43,9 @@ declare namespace JsonToAst {
         loc: AstLocation
     }
 
-    export type AstJsonEntity = AstObject | AstArray | AstLiteral;
+    export type AstJsonEntity = AstIdentifier | AstObject | AstArray;
+    export type AstValue = AstLiteral & AstJsonEntity;
+
 }
 
 declare function JsonToAst(json: string): JsonToAst.AstJsonEntity;
