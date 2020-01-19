@@ -1,4 +1,4 @@
-import { sizes } from './helpers'
+import { sizes, marketingBlocks, getMod } from './helpers'
 
 export const warningButtonSizeRule = ({ log, property, size, errors, ast, RuleKeys }:
      {log: any; property: any; size: any, errors: any, ast: any, RuleKeys: any}) => {
@@ -58,6 +58,97 @@ export const warningTextSizesRule = ({ log, property, size, errors, ast, RuleKey
           key: RuleKeys.WarningTextSizes,
           loc: log.loc
         })
+    }
+  }
+}
+
+export const textSeveralH1Rule = ({ log, property, type, errors, ast, RuleKeys }:
+    {log: any; property: any; type: any, errors: any, ast: any, RuleKeys: any}) => {
+  if (property.value.value === 'text') {
+    if (type && type.value.value === 'h1') {
+      if (log && log.data && log.data.h1) {
+        errors.push(
+          {
+            key: RuleKeys.TextSeveralH1,
+            loc: ast.loc
+          })
+      }
+      log.data.h1 = true
+    }
+  }
+}
+
+export const textInvalidH2PositionRule = ({ log, property, type, errors, ast, RuleKeys }:
+    {log: any; property: any; type: any, errors: any, ast: any, RuleKeys: any}) => {
+  if (property.value.value === 'text') {
+    if (type && type.value.value === 'h2') {
+      log.data.h2 = ast.loc
+    }
+    if (type && type.value.value === 'h1' && log.data.h2) {
+      errors.push(
+        {
+          key: RuleKeys.TextInvalidH2Position,
+          loc: log.data.h2
+        })
+    }
+  }
+}
+
+export const textInvalidH3PositionRule = ({ log, property, type, errors, ast, RuleKeys }:
+        {log: any; property: any; type: any, errors: any, ast: any, RuleKeys: any}) => {
+  if (property.value.value === 'text') {
+    if (type && type.value && type.value.value === 'h3') {
+      log.data.h3 = ast.loc
+    }
+    if (type && type.value.value === 'h2' && log.data && log.data.h3) {
+      errors.push(
+        {
+          key: RuleKeys.TextInvalidH3Position,
+          loc: log.data.h3
+        })
+    }
+    if (type && type.value.value === 'h1' && log.data && log.data.h3) {
+      errors.push(
+        {
+          key: RuleKeys.TextInvalidH3Position,
+          loc: log.data.h3
+        })
+    }
+  }
+}
+
+export const gridTooMuchMarketingBlocksRule = ({ log, property, errors, ast, RuleKeys, gridColumnsValue }:
+    {log: any, property: any, errors: any, ast: any, RuleKeys: any, gridColumnsValue?: number}) => {
+  if (property.value.value === 'fraction') {
+    const content = ast.children && ast.children.find((node: any) => node.key.value === 'content')
+    const elemMods = ast.children && ast.children.find((node: any) => node.key.value === 'elemMods')
+    const elemModsValue = getMod(elemMods, 'm-col')
+    const mColValue = elemModsValue && Number(elemModsValue.value.value)
+    const hasMarketingBlock = content.value.children.some((node: any) =>
+      node.children.some((node: any) => node.value && marketingBlocks.includes(node.value.value))
+    )
+
+    let tooMuchMarketingBlocks
+
+    if (tooMuchMarketingBlocks && log.data.blocks && gridColumnsValue) {
+      tooMuchMarketingBlocks = (mColValue + log.data.blocks) / gridColumnsValue > 0.5
+    } else if (hasMarketingBlock && gridColumnsValue) {
+      tooMuchMarketingBlocks = mColValue / gridColumnsValue > 0.5
+    } else if (log.data.blocks) {
+      tooMuchMarketingBlocks = gridColumnsValue && log.data.blocks / gridColumnsValue > 0.5
+    }
+
+    if (tooMuchMarketingBlocks) {
+      errors.push(
+        {
+          key: RuleKeys.GridTooMuchMarketingBlocks,
+          loc: ast.loc
+        })
+      log.data.blocks = 0
+    }
+
+    if (hasMarketingBlock) {
+      log.data.blocks = mColValue
     }
   }
 }

@@ -95,6 +95,54 @@
 					],
 					"default": "Error",
 					"description": "The 'warningPlaceholderSize' rule severity."
+				},
+				"example.severity.TEXT_SEVERAL_H1": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'TextSeveralH1' rule severity."
+				},
+				"example.severity.TEXT_INVALID_H2_POSITION": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'TextInvalidH2Position' rule severity."
+				},
+				"example.severity.TEXT_INVALID_H3_POSITION": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'TextInvalidH3Position' rule severity."
+				},
+				"example.severity.GRID_TOO_MUCH_MARKETING_BLOCKS": {
+					"type": "string",
+					"enum": [
+						"Error",
+						"Warning",
+						"Information",
+						"Hint",
+						"None"
+					],
+					"default": "Error",
+					"description": "The 'GridTooMuchMarketingBlocks' rule severity."
 				}
 			}
 		},

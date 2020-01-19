@@ -5,3 +5,4 @@ export const getMod = (property: any, modName: string) => {
 }
 
 export const sizes = ['xxxs', 'xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl', 'xxxxl']
+export const marketingBlocks = ['commercial', 'offer']

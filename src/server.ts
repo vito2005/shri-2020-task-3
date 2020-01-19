@@ -16,7 +16,7 @@ import * as jsonToAst from 'json-to-ast'
 
 import { ExampleConfiguration, Severity, RuleKeys } from './configuration'
 import { makeLint, LinterProblem } from './linter'
-import { warningButtonSizeRule, warningTextSizesRule, warningButtonPositionRule, warningPlaceholderSizeRule } from './additionalRules'
+import { warningButtonSizeRule, warningTextSizesRule, warningButtonPositionRule, warningPlaceholderSizeRule, textSeveralH1Rule, textInvalidH2PositionRule, textInvalidH3PositionRule, gridTooMuchMarketingBlocksRule } from './additionalRules'
 
 const conn = createConnection(ProposedFeatures.all)
 const docs: TextDocuments = new TextDocuments()
@@ -111,6 +111,18 @@ function GetMessage (key: RuleKeys): string {
   if (key === RuleKeys.WarningPlaceholderSize) {
     return 'Допустимые размеры для блока placeholder в блоке warning: s, m, l'
   }
+  if (key === RuleKeys.TextSeveralH1) {
+    return 'Заголовок первого уровня на странице должен быть единственным'
+  }
+  if (key === RuleKeys.TextInvalidH2Position) {
+    return 'Заголовок второго уровня не может находиться перед заголовком первого уровня на том же или более глубоком уровне вложенности'
+  }
+  if (key === RuleKeys.TextInvalidH3Position) {
+    return 'Заголовок третьего уровня не может находиться перед заголовком второго или первого уровня на том же или более глубоком уровне вложенности'
+  }
+  if (key === RuleKeys.GridTooMuchMarketingBlocks) {
+    return 'Маркетинговые блоки занимают больше половины от всех колонок блока grid'
+  }
 
   return `Unknown problem type '${key}'`
 }
@@ -131,15 +143,28 @@ async function validateTextDocument (textDocument: TextDocument): Promise<void> 
     isWarningBlock: boolean,
     log: any,
     mods: any,
-    ast: jsonToAst.AstJsonEntity
+    ast: jsonToAst.AstJsonEntity,
+    gridColumnsValue?: number
   ): LinterProblem<RuleKeys>[] => {
     const errors: LinterProblem<RuleKeys>[] = []
-    if (isWarningBlock) {
-      const size = getMod(mods, 'size')
-      warningTextSizesRule({ log, property, size, errors, ast, RuleKeys })
-      warningButtonSizeRule({ log, property, size, errors, ast, RuleKeys })
-      warningButtonPositionRule({ log, property, errors, ast, RuleKeys })
-      warningPlaceholderSizeRule({ log, property, size, errors, ast, RuleKeys })
+    const type = getMod(mods, 'type')
+    try {
+      textSeveralH1Rule({ log, property, type, errors, ast, RuleKeys })
+      textInvalidH2PositionRule({ log, property, type, errors, ast, RuleKeys })
+      textInvalidH3PositionRule({ log, property, type, errors, ast, RuleKeys })
+
+      if (isWarningBlock) {
+        const size = getMod(mods, 'size')
+        warningTextSizesRule({ log, property, size, errors, ast, RuleKeys })
+        warningButtonSizeRule({ log, property, size, errors, ast, RuleKeys })
+        warningButtonPositionRule({ log, property, errors, ast, RuleKeys })
+        warningPlaceholderSizeRule({ log, property, size, errors, ast, RuleKeys })
+      }
+      if (gridColumnsValue) {
+        gridTooMuchMarketingBlocksRule({ log, property, errors, ast, RuleKeys, gridColumnsValue })
+      }
+    } catch (e) {
+      console.error(e)
     }
 
     if (/^[A-Z]+$/.test(property.key.value)) {
